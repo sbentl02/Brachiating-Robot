@@ -52,10 +52,11 @@ class Hook:
         self.kit.servo[self.hook].angle = 0
 
 class Arm:
-    def __init__(self, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin):
+    def __init__(self, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, switch_pin):
         self.hook = Hook(gripper_ind, hook_ind, trigger_pin, echo_pin)
         self.step = step_pin
         self.dir = dir_pin
+        self.switch = switch_pin
         # Setup stepper
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -63,6 +64,8 @@ class Arm:
         GPIO.setup(self.dir, GPIO.OUT)
         GPIO.output(self.step, GPIO.HIGH)
         self.p = GPIO.PWM(self.step, 5000)
+        #Setup limit switch
+        GPIO.setup(self.switch, GPIO.IN)
 
     def spin_motor(self, direction, num_steps):
         self.p.ChangeFrequency(5000)
@@ -75,9 +78,30 @@ class Arm:
         GPIO.cleanup()
         return True
 
-left = Arm(0, 1, 18, 25, 23, 24)
+    def extend_arm(self):
+        self.p.ChangeFrequency(5000)
+        GPIO.output(self.dir, GPIO.HIGH)
+        # Extend arm 
+        ultrasonic_limit = 10
+        distance = self.hook.get_distance()
+        print(distance)
+        # num_steps = 500
+        # self.spin_motor(True, num_steps)
+        while (distance > ultrasonic_limit and GPIO.input(self.switch)):
+            self.p.start(1)
+            time.sleep(0.01)
+            distance = self.hook.get_distance()
+            print("Distance: ", distance)
+            print("Switched pushed: ", not GPIO.input(self.switch))
+        
+        self.hook.raise_hook()
+        self.p.stop()
+        GPIO.cleanup()
+
+
+left = Arm(0, 1, 18, 25, 23, 24, 26)
 left.hook.lower_hook()
-left.SpinMotor(True, 100)
+left.extend_arm()
 
 # left = Hook(0, 1, 18, 25)
 
