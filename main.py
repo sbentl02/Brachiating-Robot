@@ -25,8 +25,8 @@ right_backward_switch = 12
 # Servo indices
 right_gripper = 0
 right_hook = 1
-left_gripper = 2
-left_hook = 3
+left_gripper = 15
+left_hook = 14
 
 x_tol = 0.5
 y_tol = 0.5
@@ -79,10 +79,11 @@ class Hook:
 
     def raise_hook(self):
         # UP = 0,0
-        # R Gripper 100 at closed, 180 open
         # Open gripper
         self.kit.servo[self.gripper].angle = self.open_gripper
         time.sleep(1)
+        self.kit.servo[self.gripper].angle = self.closed_gripper / 2
+        time.sleep(0.1)
         # Raise hook
         self.kit.servo[self.hook].angle = self.closed_hook
         time.sleep(0.1)
@@ -92,10 +93,14 @@ class Hook:
     
     def lower_hook(self):
         # Open gripper
-        self.kit.servo[self.gripper].angle = self.open_gripper
+        self.kit.servo[self.gripper].angle = self.open_gripper / 2
         time.sleep(0.1)
         # Lower hook
         self.kit.servo[self.hook].angle = self.open_hook
+        time.sleep(0.1)
+        self.kit.servo[self.gripper].angle = self.open_gripper
+        time.sleep(0.1)
+
 
 class Arm:
     def __init__(self, right, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, front_switch_pin):
@@ -167,12 +172,12 @@ def is_stable():
     return True
 
 right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch)
-# left = Arm(False, left_gripper, left_hook, left_ultrasonic_trig, left_ultrasonic_echo, left_stepper_step, left_stepper_dir, left_forward_switch)
+left = Arm(False, left_gripper, left_hook, left_ultrasonic_trig, left_ultrasonic_echo, left_stepper_step, left_stepper_dir, left_forward_switch)
 
-right.hook.raise_hook()
-# right.move_arm()
+# right.hook.raise_hook()
+right.move_arm()
 right.cleanup()
-# left.cleanup()
+left.cleanup()
 
 # except KeyboardInterrupt:
 #     print("Stopped by User")
