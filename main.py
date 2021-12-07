@@ -1,6 +1,8 @@
 from adafruit_servokit import ServoKit
+from imusensor.MPU9250 import MPU9250
+
 import RPi.GPIO as GPIO
-import time
+import time, os, sys, smbus
 
 # Pin values
 left_stepper_step = 13
@@ -19,6 +21,16 @@ left_forward_switch = 4
 left_backward_switch = 22
 right_forward_switch = 25
 right_backward_switch = 12
+
+x_tol = 0.5
+y_tol = 0.5
+z_tol = 0.5
+
+print("Setting up IMU")
+address = 0x68
+bus = smbus.SMBus(1)
+imu = MPU9250.MPU9250(bus, address)
+imu.begin()
 
 
 class Hook:
@@ -71,11 +83,12 @@ class Hook:
         self.kit.servo[self.hook].angle = 0
 
 class Arm:
-    def __init__(self, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, switch_pin):
+    def __init__(self, right, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, front_switch_pin):
+        self.right = right
         self.hook = Hook(gripper_ind, hook_ind, trigger_pin, echo_pin)
         self.step = step_pin
         self.dir = dir_pin
-        self.switch = switch_pin
+        self.front_switch = front_switch_pin
         # Setup stepper
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -84,7 +97,7 @@ class Arm:
         GPIO.output(self.step, GPIO.HIGH)
         self.p = GPIO.PWM(self.step, 5000)
         #Setup limit switch
-        GPIO.setup(self.switch, GPIO.IN)
+        GPIO.setup(self.front_switch, GPIO.IN)
 
     def spin_motor(self, direction, num_steps):
         self.p.ChangeFrequency(5000)
@@ -97,32 +110,54 @@ class Arm:
         GPIO.cleanup()
         return True
 
-    def extend_arm(self):
+    def move_arm(self):
+        self.hook.lower_hook()
         self.p.ChangeFrequency(5000)
-        GPIO.output(self.dir, GPIO.HIGH)
+        GPIO.output(self.dir, self.right)
         # Extend arm 
         ultrasonic_limit = 10
         distance = self.hook.get_distance()
         print(distance)
         # num_steps = 500
         # self.spin_motor(True, num_steps)
-        while (distance > ultrasonic_limit and GPIO.input(self.switch)):
+        while (distance > ultrasonic_limit and GPIO.input(self.front_switch)):
             self.p.start(1)
             time.sleep(0.01)
             distance = self.hook.get_distance()
             print("Distance: ", distance)
-            print("Switched pushed: ", not GPIO.input(self.switch))
+            print("Switched pushed: ", not GPIO.input(self.front_switch))
         
         self.hook.raise_hook()
+    
+    def cleanup(self):
         self.p.stop()
         GPIO.cleanup()
 
-self, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, switch_pin
+# def move_body():
+#     right.p.ChangeFrequency(5000)
+#     GPIO.output(self.dir, self.right)
 
-right = Arm(0, 1, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch)
-right.hook.lower_hook()
-right.extend_arm()
+def is_stable():
+    imu.readSensor()
+    imu.computeOrientation()
 
+    print ("Accel x: {0} ; Accel y : {1} ; Accel z : {2}".format(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2]))
+    x_accel = imu.AccelVals[0]
+    y_accel = imu.AccelVals[1]
+    z_accel = imu.AccelVals[2]
+
+    if (abs(x_accel) > x_tol and abs(y_accel) > y_tol and abs(z_accel) > z_tol):
+        return False
+
+    return True
+
+right = Arm(True, 0, 1, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch)
+right.move_arm()
+right.cleanup()
+# except KeyboardInterrupt:
+#     print("Stopped by User")
+#     right.cleanup()
+    
 # left = Hook(0, 1, 18, 25)
 
 # left.raise_hook()
