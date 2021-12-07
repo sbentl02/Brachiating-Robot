@@ -1,6 +1,10 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO, time
 
+# L
+# step_pin = 13
+# dir_pin = 26
+# R
 step_pin = 16
 dir_pin = 20
 
@@ -12,10 +16,10 @@ GPIO.setwarnings(False)
 GPIO.output(step_pin, GPIO.HIGH)
 # GPIO.output(dir_pin, GPIO.LOW)
 
-p = GPIO.PWM(step_pin, 5000)
+p = GPIO.PWM(step_pin, 1000)
 
 def SpinMotor(direction, num_steps):
-    p.ChangeFrequency(5000)
+    p.ChangeFrequency(1000)
     GPIO.output(dir_pin, direction)
     while num_steps > 0:
         p.start(1)

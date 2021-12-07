@@ -22,6 +22,12 @@ left_backward_switch = 22
 right_forward_switch = 25
 right_backward_switch = 12
 
+# Servo indices
+right_gripper = 0
+right_hook = 1
+left_gripper = 2
+left_hook = 3
+
 x_tol = 0.5
 y_tol = 0.5
 z_tol = 0.5
@@ -32,9 +38,12 @@ bus = smbus.SMBus(1)
 imu = MPU9250.MPU9250(bus, address)
 imu.begin()
 
-
 class Hook:
     kit = ServoKit(channels=16)
+    open_gripper = 180
+    closed_gripper = 0
+    open_hook = 90
+    closed_hook = 0
 
     def __init__(self, gripper_ind, hook_ind, trigger_pin, echo_pin):
         self.gripper = gripper_ind
@@ -69,18 +78,24 @@ class Hook:
         return distance
 
     def raise_hook(self):
+        # UP = 0,0
+        # R Gripper 100 at closed, 180 open
         # Open gripper
-        self.kit.servo[self.gripper].angle = 180
+        self.kit.servo[self.gripper].angle = self.open_gripper
+        time.sleep(1)
         # Raise hook
-        self.kit.servo[self.hook].angle = 180
+        self.kit.servo[self.hook].angle = self.closed_hook
+        time.sleep(0.1)
         # Close gripper
-        self.kit.servo[self.gripper].angle = 0
+        self.kit.servo[self.gripper].angle = self.closed_gripper
+        time.sleep(0.1)
     
     def lower_hook(self):
         # Open gripper
-        self.kit.servo[self.gripper].angle = 0
+        self.kit.servo[self.gripper].angle = self.open_gripper
+        time.sleep(0.1)
         # Lower hook
-        self.kit.servo[self.hook].angle = 0
+        self.kit.servo[self.hook].angle = self.open_hook
 
 class Arm:
     def __init__(self, right, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, front_switch_pin):
@@ -112,15 +127,15 @@ class Arm:
 
     def move_arm(self):
         self.hook.lower_hook()
-        self.p.ChangeFrequency(5000)
-        GPIO.output(self.dir, self.right)
+        self.p.ChangeFrequency(2500)
+        GPIO.output(self.dir, not self.right)
         # Extend arm 
         ultrasonic_limit = 10
         distance = self.hook.get_distance()
         print(distance)
         # num_steps = 500
         # self.spin_motor(True, num_steps)
-        while (distance > ultrasonic_limit and GPIO.input(self.front_switch)):
+        while (distance > ultrasonic_limit): #and GPIO.input(self.front_switch)
             self.p.start(1)
             time.sleep(0.01)
             distance = self.hook.get_distance()
@@ -151,9 +166,14 @@ def is_stable():
 
     return True
 
-right = Arm(True, 0, 1, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch)
-right.move_arm()
+right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch)
+# left = Arm(False, left_gripper, left_hook, left_ultrasonic_trig, left_ultrasonic_echo, left_stepper_step, left_stepper_dir, left_forward_switch)
+
+right.hook.raise_hook()
+# right.move_arm()
 right.cleanup()
+# left.cleanup()
+
 # except KeyboardInterrupt:
 #     print("Stopped by User")
 #     right.cleanup()
