@@ -2,6 +2,25 @@ from adafruit_servokit import ServoKit
 import RPi.GPIO as GPIO
 import time
 
+# Pin values
+left_stepper_step = 13
+left_stepper_dir = 26
+right_stepper_step = 16
+right_stepper_dir = 20
+
+left_ultrasonic_trig = 5
+left_ultrasonic_echo = 6
+right_ultrasonic_trig = 23
+right_ultrasonic_echo = 24
+center_ultrasonic_trig = 17
+center_ultrasonic_echo = 27
+
+left_forward_switch = 4
+left_backward_switch = 22
+right_forward_switch = 25
+right_backward_switch = 12
+
+
 class Hook:
     kit = ServoKit(channels=16)
 
@@ -98,10 +117,11 @@ class Arm:
         self.p.stop()
         GPIO.cleanup()
 
+self, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, switch_pin
 
-left = Arm(0, 1, 18, 25, 23, 24, 26)
-left.hook.lower_hook()
-left.extend_arm()
+right = Arm(0, 1, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch)
+right.hook.lower_hook()
+right.extend_arm()
 
 # left = Hook(0, 1, 18, 25)
 

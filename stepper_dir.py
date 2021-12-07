@@ -1,8 +1,8 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO, time
 
-step_pin = 23
-dir_pin = 24
+step_pin = 16
+dir_pin = 20
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(step_pin, GPIO.OUT)
@@ -25,4 +25,4 @@ def SpinMotor(direction, num_steps):
     GPIO.cleanup()
     return True
 
-SpinMotor(True, 100)
+SpinMotor(False, 100)
