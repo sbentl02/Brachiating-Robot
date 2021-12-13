@@ -6,11 +6,11 @@ GPIO.setmode(GPIO.BCM)
 
 #set GPIO Pins
 # L
-# GPIO_TRIGGER = 5
-# GPIO_ECHO = 6
-# R
-GPIO_TRIGGER = 23
-GPIO_ECHO = 24
+GPIO_TRIGGER = 5
+GPIO_ECHO = 6
+# # R
+# GPIO_TRIGGER = 23
+# GPIO_ECHO = 24
 
  
 #set GPIO direction (IN / OUT)
