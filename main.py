@@ -106,7 +106,7 @@ class Hook:
 
 
 class Arm:
-    arm_frequency = 2500 
+    arm_frequency = 1000 
 
     def __init__(self, right, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, front_switch_pin):
         self.right = right
@@ -137,7 +137,7 @@ class Arm:
 
     def move_arm(self, with_ultrasonic):
         self.hook.lower_hook()
-        self.p.ChangeFrequency(arm_frequency)
+        self.p.ChangeFrequency(self.arm_frequency)
         GPIO.output(self.dir, not self.right)
         # Extend arm 
         ultrasonic_limit = 10
@@ -177,7 +177,7 @@ def is_stable():
     return True
 
 def move_body(right_arm, left_arm, body_hook):
-    body_hook.lower_hook()
+    # body_hook.lower_hook()
     print("hook lowered")
     right_arm.p.ChangeFrequency(1000)
     left_arm.p.ChangeFrequency(1000)
@@ -196,18 +196,18 @@ def move_body(right_arm, left_arm, body_hook):
         distance = body_hook.get_distance()
         print("Distance: ", distance)
         # print("Switched pushed: ", not GPIO.input(self.front_switch))
-    body_hook.raise_hook()    
+    # body_hook.raise_hook()    
 
 right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch)
 left = Arm(False, left_gripper, left_hook, left_ultrasonic_trig, left_ultrasonic_echo, left_stepper_step, left_stepper_dir, left_forward_switch)
-body_hook = Hook(center_gripper, center_hook, right_ultrasonic_trig, right_ultrasonic_echo)
-move_body(right, left, body_hook)
+body_hook = Hook(center_gripper, center_hook, center_ultrasonic_trig, center_ultrasonic_echo)
+# move_body(right, left, body_hook)
 
 # right.hook.raise_hook()
-# right.move_arm(True)
+right.move_arm(True)
 
-# right.cleanup()
-# left.cleanup()
+right.cleanup()
+left.cleanup()
 
 # except KeyboardInterrupt:
 #     print("Stopped by User")

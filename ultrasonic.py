@@ -8,9 +8,12 @@ GPIO.setmode(GPIO.BCM)
 # L
 GPIO_TRIGGER = 5
 GPIO_ECHO = 6
-# # R
+# R
 # GPIO_TRIGGER = 23
 # GPIO_ECHO = 24
+# Center
+# GPIO_TRIGGER = 17
+# GPIO_ECHO = 27
 
  
 #set GPIO direction (IN / OUT)

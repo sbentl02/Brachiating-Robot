@@ -2,11 +2,16 @@ from adafruit_servokit import ServoKit
 import time
 
 kit = ServoKit(channels=16)
-ind = 0
-ind2 = 15
-print(kit.servo[ind].angle)
-kit.servo[ind].angle = 90
-kit.servo[ind2].angle = 90
+# ind = 0
+# ind2 = 15
+# print(kit.servo[ind].angle)
+# kit.servo[ind].angle = 90
+# kit.servo[ind2].angle = 90
+
+motors = [0, 1, 8,9,14,15]
+for motor in motors:
+    kit.servo[motor].angle = 20
+    time.sleep(1)
 
 # R Hook up = 0, down = 90 (don't go over 90)
 # R gripper up = 0, down = 180
