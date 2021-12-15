@@ -195,6 +195,7 @@ right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultras
 # right.hook.raise_hook()
 right.move_arm(True)
 time.sleep(1)
+# print("Stable: ", is_stable())
 # left.move_arm(True)
 time.sleep(1)
 # move_body(right, left, body_hook)
