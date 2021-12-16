@@ -23,7 +23,37 @@ try:
     while (True):
         char = screen.getch()
         if char == ord('q'):
-            kit.servo[right_gripper].angle = kit.servo[right_gripper].angle + 1
+            curr_angle = kit.servo[left_gripper].angle
+            if (curr_angle <180):
+                kit.servo[left_gripper].angle = curr_angle + 1
+        if char == ord('a'):
+            curr_angle = kit.servo[left_gripper].angle
+            if (curr_angle > 0):
+                kit.servo[left_gripper].angle = curr_angle - 1
+        if char == ord('w'):
+            curr_angle = kit.servo[left_hook].angle
+            if (curr_angle < 180):
+                kit.servo[left_hook].angle = curr_angle + 1
+        if char == ord('s'):
+            curr_angle = kit.servo[left_hook].angle
+            if (curr_angle > 0):
+                kit.servo[left_hook].angle = curr_angle - 1
+        if char == ord('p'):
+            curr_angle = kit.servo[right_gripper].angle
+            if (curr_angle <180):
+                kit.servo[right_gripper].angle = curr_angle + 1
+        if char == ord('l'):
+            curr_angle = kit.servo[right_gripper].angle
+            if (curr_angle > 0):
+                kit.servo[right_gripper].angle = curr_angle - 1
+        if char == ord('o'):
+            curr_angle = kit.servo[right_hook].angle
+            if (curr_angle < 180):
+                kit.servo[right_hook].angle = curr_angle + 1
+        if char == ord('k'):
+            curr_angle = kit.servo[right_hook].angle
+            if (curr_angle > 0):
+                kit.servo[right_hook].angle = curr_angle - 1
 except KeyboardInterrupt:
     curses.nocbreak()
     screen.keypad(False)
