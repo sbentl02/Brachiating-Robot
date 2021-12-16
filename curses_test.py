@@ -24,7 +24,7 @@ try:
         char = screen.getch()
         if char == ord('q'):
             curr_angle = kit.servo[left_gripper].angle
-            if (curr_angle <180):
+            if (curr_angle < 180):
                 kit.servo[left_gripper].angle = curr_angle + 1
         if char == ord('a'):
             curr_angle = kit.servo[left_gripper].angle
