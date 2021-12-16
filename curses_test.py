@@ -1,5 +1,12 @@
-import curses, time
+import curses
 from adafruit_servokit import ServoKit
+
+# Set up keyboard input
+first = True
+screen = curses.initscr()
+# curses.noecho()
+curses.cbreak()
+screen.keypad(True)
 
 # Servo indices
 right_gripper = 0
@@ -9,14 +16,8 @@ left_hook = 14
 center_gripper = 8
 center_hook = 9
 
-first = True
-screen = curses.initscr()
-# curses.noecho()
-curses.cbreak()
-screen.keypad(True)
-
+# Servo initialization
 kit = ServoKit(channels=16)
-
 kit.servo[right_gripper].angle = 0
 kit.servo[right_hook].angle = 0
 kit.servo[left_gripper].angle = 0
@@ -25,14 +26,12 @@ kit.servo[center_gripper].angle = 0
 kit.servo[center_hook].angle = 0
 
 print("Start")
-# curses.nocbreak()
-# screen.keypad(False)
-# curses.echo()
-# curses.endwin()
-
 try:
     while (True):
+        # Get user input from keyboard
         char = screen.getch()
+        # Parse input and move motors
+        # Left hook servos
         if char == ord('q'):
             curr_angle = kit.servo[left_gripper].angle
             if (curr_angle < 179):
