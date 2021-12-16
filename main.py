@@ -34,11 +34,11 @@ x_tol = 0.5
 y_tol = 0.5
 z_tol = 0.5
 
-print("Setting up IMU")
-address = 0x68
-bus = smbus.SMBus(1)
-imu = MPU9250.MPU9250(bus, address)
-imu.begin()
+# print("Setting up IMU")
+# address = 0x68
+# bus = smbus.SMBus(1)
+# imu = MPU9250.MPU9250(bus, address)
+# imu.begin()
 
 class Hook:
     kit = ServoKit(channels=16)
@@ -70,7 +70,6 @@ class Hook:
         # save time of arrival
         while GPIO.input(self.echo) == 1:
             StopTime = time.time()
-        print("stop time")
         # time difference between start and arrival
         TimeElapsed = StopTime - StartTime
         # multiply with the sonic speed (34300 cm/s)
@@ -105,7 +104,7 @@ class Hook:
 
 
 class Arm:
-    arm_frequency = 1000 
+    arm_frequency = 2000 
 
     def __init__(self, right, gripper_ind, hook_ind, trigger_pin, echo_pin, step_pin, dir_pin, front_switch_pin, back_switch_pin):
         self.right = right
@@ -127,20 +126,21 @@ class Arm:
         GPIO.setup(self.back_switch, GPIO.IN)
 
     def move_arm(self, with_ultrasonic):
-        self.hook.lower_hook()
+        # self.hook.lower_hook()
         self.p.ChangeFrequency(self.arm_frequency)
         GPIO.output(self.dir, not self.right)
+        print("Setup done")
         # Extend arm 
         ultrasonic_limit = 10
         distance = self.hook.get_distance()
         print(distance)
-        while (distance > ultrasonic_limit and not GPIO.input(self.back_switch)): 
+        while (distance > ultrasonic_limit): # and not GPIO.input(self.back_switch)): 
             self.p.start(1)
             time.sleep(0.01)
             distance = self.hook.get_distance()
             print("Distance: ", distance)
             print("Switched pushed: ", GPIO.input(self.back_switch))
-        self.hook.raise_hook()
+        # self.hook.raise_hook()
     
     def cleanup(self):
         self.p.stop()
@@ -188,21 +188,23 @@ def move_body(right_arm, left_arm, body_hook):
     
     body_hook.raise_hook()    
 
-right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch, right_backward_switch)
-# left = Arm(False, left_gripper, left_hook, left_ultrasonic_trig, left_ultrasonic_echo, left_stepper_step, left_stepper_dir, left_forward_switch, left_backward_switch)
+print("Start")
+# right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch, right_backward_switch)
+left = Arm(False, left_gripper, left_hook, left_ultrasonic_trig, left_ultrasonic_echo, left_stepper_step, left_stepper_dir, left_forward_switch, left_backward_switch)
 # body_hook = Hook(center_gripper, center_hook, center_ultrasonic_trig, center_ultrasonic_echo)
-
+print("Move arm")
 # right.hook.raise_hook()
-right.move_arm(True)
-time.sleep(1)
+# right.move_arm(True)
+print("Moved arm")
+# time.sleep(1)
 # print("Stable: ", is_stable())
-# left.move_arm(True)
-time.sleep(1)
+left.move_arm(True)
+# time.sleep(1)
 # move_body(right, left, body_hook)
 
 
-right.cleanup()
-# left.cleanup()
+# right.cleanup()
+left.cleanup()
 
 # except KeyboardInterrupt:
 #     print("Stopped by User")

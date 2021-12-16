@@ -23,7 +23,7 @@ try:
     while (True):
         char = screen.getch()
         if char == ord('q'):
-            kit.servo[left_gripper].angle = kit.servo[left_gripper].angle + 1
+            kit.servo[right_gripper].angle = kit.servo[right_gripper].angle + 1
 except KeyboardInterrupt:
     curses.nocbreak()
     screen.keypad(False)
