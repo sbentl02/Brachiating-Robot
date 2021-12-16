@@ -1,7 +1,12 @@
 import RPi.GPIO as GPIO
 import time
 
-switchPin = 4
+left_forward_switch = 4
+left_backward_switch = 22
+right_forward_switch = 25
+right_backward_switch = 12
+
+switchPin = left_backward_switch
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(switchPin, GPIO.IN)

@@ -7,7 +7,7 @@ from imusensor.MPU9250 import MPU9250
 
 x_tol = 0.5
 y_tol = 0.5
-z_tol = 0.5
+z_tol = 0.5 # adjust one for gravity
 
 print("Setting up IMU")
 address = 0x68

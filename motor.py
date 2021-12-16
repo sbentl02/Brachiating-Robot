@@ -8,9 +8,9 @@ kit = ServoKit(channels=16)
 # kit.servo[ind].angle = 90
 # kit.servo[ind2].angle = 90
 
-motors = [0, 1, 8,9,14,15]
+motors = [0, 1, 8, 9, 14, 15]
 for motor in motors:
-    kit.servo[motor].angle = 20
+    kit.servo[motor].angle = 10
     time.sleep(1)
 
 # R Hook up = 0, down = 90 (don't go over 90)

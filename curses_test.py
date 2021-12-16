@@ -23,6 +23,7 @@ try:
     while (True):
         char = screen.getch()
         if char == ord('q'):
+<<<<<<< HEAD
             curr_angle = kit.servo[left_gripper].angle
             if (curr_angle <180):
                 kit.servo[left_gripper].angle = curr_angle + 1
@@ -54,6 +55,9 @@ try:
             curr_angle = kit.servo[right_hook].angle
             if (curr_angle > 0):
                 kit.servo[right_hook].angle = curr_angle - 1
+=======
+            kit.servo[right_gripper].angle = kit.servo[right_gripper].angle + 1
+>>>>>>> a0e342689d22f4e24cc304c813b3ac2ea660e644
 except KeyboardInterrupt:
     curses.nocbreak()
     screen.keypad(False)
