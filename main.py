@@ -146,9 +146,6 @@ class Arm:
         self.p.stop()
         GPIO.cleanup()
 
-# def move_body():
-#     right.p.ChangeFrequency(5000)
-#     GPIO.output(self.dir, self.right)
 
 def is_stable():
     imu.readSensor()
@@ -189,38 +186,32 @@ def move_body(right_arm, left_arm, body_hook):
     body_hook.raise_hook()    
 
 print("Start")
-# right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch, right_backward_switch)
+right = Arm(True, right_gripper, right_hook, right_ultrasonic_trig, right_ultrasonic_echo, right_stepper_step, right_stepper_dir, right_forward_switch, right_backward_switch)
 left = Arm(False, left_gripper, left_hook, left_ultrasonic_trig, left_ultrasonic_echo, left_stepper_step, left_stepper_dir, left_forward_switch, left_backward_switch)
-# body_hook = Hook(center_gripper, center_hook, center_ultrasonic_trig, center_ultrasonic_echo)
-print("Move arm")
-# right.hook.raise_hook()
-# right.move_arm(True)
-print("Moved arm")
-# time.sleep(1)
-# print("Stable: ", is_stable())
-left.move_arm(True)
-# time.sleep(1)
-# move_body(right, left, body_hook)
+body_hook = Hook(center_gripper, center_hook, center_ultrasonic_trig, center_ultrasonic_echo)
 
+# Initial grab
+right.hook.raise_hook()
+left.hook.raise_hook()
+body_hook.raise_hook()
 
-# right.cleanup()
-left.cleanup()
+# Main loop
+try: 
+    while (True):
+        right.move_arm(True)
+        while (not is_stable()):
+            time.sleep(0.5)
+        move_body(right, left, body_hook)
+        while (not is_stable()):
+            time.sleep(0.5)
+        left.move_arm(True)
+        while (not is_stable()):
+            time.sleep(0.5)
+            
+except KeyboardInterrupt:
+    right.hook.lower_hook()
+    left.hook.lower_hook()
+    body_hook.lower_hook()
 
-# except KeyboardInterrupt:
-#     print("Stopped by User")
-#     right.cleanup()
-    
-# left = Hook(0, 1, 18, 25)
-
-# left.raise_hook()
-
-# try:
-#     while True:
-#         dist = left.get_distance()
-#         print ("Measured Distance = %.1f cm" % dist)
-#         time.sleep(1)
-#     # Reset by pressing CTRL + C
-# except KeyboardInterrupt:
-#     print("Measurement stopped by User")
-#     GPIO.cleanup()
-
+    right.cleanup()
+    left.cleanup()
