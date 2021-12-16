@@ -16,7 +16,7 @@ GPIO.setwarnings(False)
 GPIO.output(step_pin, GPIO.HIGH)
 # GPIO.output(dir_pin, GPIO.LOW)
 
-p = GPIO.PWM(step_pin, 2000)
+p = GPIO.PWM(step_pin, 1000)
 
 def SpinMotor(direction, num_steps):
     p.ChangeFrequency(2000)
@@ -29,4 +29,4 @@ def SpinMotor(direction, num_steps):
     GPIO.cleanup()
     return True
 
-SpinMotor(True, 100)
+SpinMotor(False, 1000)
